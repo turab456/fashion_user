@@ -72,7 +72,7 @@ const resolveImage = (url: string) => {
   if (!url || url === "/images/products/placeholder.jpg") return "";
   if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url;
   if (url.startsWith("/assets/")) return url;
-  if (url.startsWith("/uploads/")) return `http://localhost:5001${url}`;
+  if (url.startsWith("/uploads/")) return `https://fashion-be-nfrg.onrender.com${url}`;
   return url;
 };
 
