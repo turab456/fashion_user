@@ -19,7 +19,7 @@ export default function CampaignEngine() {
 
           // Check frequency rules
           const { frequencyType } = camp.frequency;
-          const storageKey = `aura_campaign_seen_${camp._id}`;
+          const storageKey = `HOQ_campaign_seen_${camp._id}`;
 
           if (frequencyType === "Once" && localStorage.getItem(storageKey)) {
             return;

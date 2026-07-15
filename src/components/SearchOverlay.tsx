@@ -100,7 +100,7 @@ export default function SearchOverlay() {
           {/* Header Row */}
           <div className="max-w-[1440px] mx-auto w-full px-6 h-20 flex items-center justify-between">
             <span className="font-serif text-2xl tracking-[0.25em] uppercase text-primary select-none">
-              AURA
+              HOQ
             </span>
             <button
               onClick={() => setSearchOpen(false)}

@@ -45,11 +45,10 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
-          isTransparent
+        className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${isTransparent
             ? "bg-transparent text-white border-transparent"
             : "bg-white text-primary border-b border-border-custom shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-        }`}
+          }`}
       >
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
           {/* Mobile Menu Icon */}
@@ -69,7 +68,7 @@ export default function Header() {
             href="/"
             className="font-serif text-2xl tracking-[0.25em] font-normal uppercase select-none transition-opacity hover:opacity-80"
           >
-            AURA
+            HOQ
           </Link>
 
           {/* Center: Navigation Links (Desktop) */}
@@ -131,9 +130,8 @@ export default function Header() {
                 <ShoppingBag strokeWidth={1} className="w-[20px] h-[20px]" />
                 {totalCartItems > 0 && (
                   <span
-                    className={`absolute -top-0.5 -right-0.5 text-[9px] font-sans font-semibold rounded-full w-4 h-4 flex items-center justify-center transition-colors ${
-                      isTransparent ? "bg-white text-primary" : "bg-primary text-white"
-                    }`}
+                    className={`absolute -top-0.5 -right-0.5 text-[9px] font-sans font-semibold rounded-full w-4 h-4 flex items-center justify-center transition-colors ${isTransparent ? "bg-white text-primary" : "bg-primary text-white"
+                      }`}
                   >
                     {totalCartItems}
                   </span>
@@ -146,9 +144,8 @@ export default function Header() {
 
       {/* Mobile Navigation Drawer */}
       <div
-        className={`fixed inset-0 z-50 transition-opacity duration-300 md:hidden ${
-          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 transition-opacity duration-300 md:hidden ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       >
         {/* Backdrop */}
         <div
@@ -158,13 +155,12 @@ export default function Header() {
 
         {/* Menu content */}
         <div
-          className={`absolute top-0 left-0 w-80 max-w-[90%] h-full bg-brand-bg text-primary p-8 shadow-xl flex flex-col justify-between transition-transform duration-300 transform ${
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`absolute top-0 left-0 w-80 max-w-[90%] h-full bg-brand-bg text-primary p-8 shadow-xl flex flex-col justify-between transition-transform duration-300 transform ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div>
             <div className="flex items-center justify-between mb-12">
-              <span className="font-serif text-2xl tracking-[0.2em] uppercase">AURA</span>
+              <span className="font-serif text-2xl tracking-[0.2em] uppercase">HOQ</span>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-1 focus:outline-none"

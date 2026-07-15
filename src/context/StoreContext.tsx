@@ -67,24 +67,34 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
+// Helper to map relative image paths to full API URL
+const resolveImage = (url: string) => {
+  if (!url || url === "/images/products/placeholder.jpg") return "";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url;
+  if (url.startsWith("/assets/")) return url;
+  if (url.startsWith("/uploads/")) return `http://localhost:5001${url}`;
+  return url;
+};
+
 // Helper to map backend product structure to frontend Product structure
 export function mapBackendProductToFrontend(bp: any): Product {
-  const colorsMap = new Map<string, { name: string; hex: string; images: string[] }>();
+  const colorsMap = new Map<string, { name: string; hex: string; images: string[]; family?: string }>();
   const sizesSet = new Set<string>();
-  
+
   let basePrice = 0;
   let baseSalePrice: number | null = null;
-  
+
   if (bp.variants && bp.variants.length > 0) {
     basePrice = bp.variants[0].prices?.mrp || 0;
     baseSalePrice = bp.variants[0].prices?.offerPrice || null;
-    
+
     bp.variants.forEach((v: any) => {
       if (v.color) {
         colorsMap.set(v.color.name, {
           name: v.color.name,
           hex: v.color.hex,
-          images: v.images && v.images.length > 0 ? v.images : bp.images
+          images: v.images && v.images.length > 0 ? v.images.map(resolveImage) : (bp.images ? bp.images.map(resolveImage) : []),
+          family: v.color.colorFamily?.name || v.color.name
         });
       }
       if (v.size) {
@@ -92,17 +102,17 @@ export function mapBackendProductToFrontend(bp: any): Product {
       }
     });
   }
-  
+
   const colors = Array.from(colorsMap.values());
   const sizes = Array.from(sizesSet);
-  
+
   return {
     id: bp.slug, // Use slug as product.id for routing matching
     name: bp.name,
     price: basePrice,
     salePrice: baseSalePrice,
-    images: bp.images && bp.images.length > 0 ? bp.images : ["/assets/wool_coat_front.png"],
-    colors: colors.length > 0 ? colors : [{ name: "Default", hex: "#000000", images: bp.images }],
+    images: bp.images && bp.images.length > 0 ? bp.images.map(resolveImage).filter(Boolean) : [],
+    colors: colors.length > 0 ? colors : [{ name: "Default", hex: "#000000", images: bp.images ? bp.images.map(resolveImage).filter(Boolean) : [] }],
     sizes: sizes.length > 0 ? sizes : ["S", "M", "L"],
     category: bp.category?.name || "General",
     description: bp.description || "",
@@ -129,7 +139,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setCartOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [taxRate, setTaxRate] = useState<number>(0);
-  
+
   // Cache to store loaded backend variants by product slug/id
   const [variantsCache, setVariantsCache] = useState<Record<string, any[]>>({});
 
@@ -139,7 +149,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // Sync state items to database
   const syncCurrentCartToDb = useCallback(async (currentItems: CartItem[]) => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("aura_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("HOQ_token") : null;
     if (!token) return;
 
     try {
@@ -147,7 +157,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       for (const item of currentItems) {
         let variantId = "";
         const cachedVariants = variantsCache[item.product.id];
-        
+
         if (cachedVariants) {
           const match = cachedVariants.find(
             (v: any) => v.color?.name === item.color.name && v.size?.name === item.size
@@ -182,12 +192,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     try {
       const cartRes = await api.cart.get();
       const dbCartItems = cartRes.data?.items || [];
-      
+
       const mappedItems: CartItem[] = dbCartItems.map((item: any) => {
         if (!item.variant || !item.variant.product) return null;
-        
+
         const product = mapBackendProductToFrontend(item.variant.product);
-        
+
         if (item.variant.product.variants) {
           cacheVariants(product.id, item.variant.product.variants);
         }
@@ -202,13 +212,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           quantity: item.quantity
         };
       }).filter(Boolean) as CartItem[];
-      
+
       setCart(mappedItems);
     } catch (err: any) {
       console.error("Failed to load cart from database:", err);
       if (err.message?.includes("Invalid or expired access token") || err.status === 401) {
-        localStorage.removeItem("aura_token");
-        localStorage.removeItem("aura_user");
+        localStorage.removeItem("HOQ_token");
+        localStorage.removeItem("HOQ_user");
         setUser(null);
       }
     }
@@ -219,7 +229,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     try {
       const ordersRes = await api.orders.myOrders();
       const dbOrders = ordersRes.data || [];
-      
+
       const mappedOrders: Order[] = dbOrders.map((ord: any) => ({
         id: ord.orderNumber || ord._id,
         date: ord.createdAt ? ord.createdAt.split("T")[0] : new Date().toISOString().split("T")[0],
@@ -247,8 +257,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       console.error("Failed to load user details from database:", err);
       if (err.message?.includes("Invalid or expired access token") || err.status === 401) {
-        localStorage.removeItem("aura_token");
-        localStorage.removeItem("aura_user");
+        localStorage.removeItem("HOQ_token");
+        localStorage.removeItem("HOQ_user");
         setUser(null);
       }
     }
@@ -256,44 +266,44 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // Load initial settings from local storage
   useEffect(() => {
-    const savedWishlist = localStorage.getItem("aura_wishlist");
-    const savedRecent = localStorage.getItem("aura_recent");
+    const savedWishlist = localStorage.getItem("HOQ_wishlist");
+    const savedRecent = localStorage.getItem("HOQ_recent");
     if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
     if (savedRecent) setRecentlyViewed(JSON.parse(savedRecent));
 
-    const token = localStorage.getItem("aura_token");
-    const savedUser = localStorage.getItem("aura_user");
+    const token = localStorage.getItem("HOQ_token");
+    const savedUser = localStorage.getItem("HOQ_user");
     if (token && savedUser) {
       setUser(JSON.parse(savedUser));
       loadDbCart();
       loadDbUserDetail();
     } else {
-      const savedCart = localStorage.getItem("aura_cart");
+      const savedCart = localStorage.getItem("HOQ_cart");
       if (savedCart) setCart(JSON.parse(savedCart));
     }
   }, [loadDbCart, loadDbUserDetail]);
 
   // Sync to local storage on changes (only for guests)
   useEffect(() => {
-    const token = localStorage.getItem("aura_token");
+    const token = localStorage.getItem("HOQ_token");
     if (!token) {
-      localStorage.setItem("aura_cart", JSON.stringify(cart));
+      localStorage.setItem("HOQ_cart", JSON.stringify(cart));
     }
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem("aura_wishlist", JSON.stringify(wishlist));
+    localStorage.setItem("HOQ_wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
   useEffect(() => {
-    localStorage.setItem("aura_recent", JSON.stringify(recentlyViewed));
+    localStorage.setItem("HOQ_recent", JSON.stringify(recentlyViewed));
   }, [recentlyViewed]);
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem("aura_user", JSON.stringify(user));
+      localStorage.setItem("HOQ_user", JSON.stringify(user));
     } else {
-      localStorage.removeItem("aura_user");
+      localStorage.removeItem("HOQ_user");
     }
   }, [user]);
 
@@ -349,8 +359,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setCart((prevCart) => {
       const updatedCart = prevCart.map((item) =>
         item.product.id === productId &&
-        item.size === size &&
-        item.color.name === colorName
+          item.size === size &&
+          item.color.name === colorName
           ? { ...item, quantity }
           : item
       );
@@ -383,7 +393,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const res = await api.auth.login({ email, password });
     const { user: userObj, accessToken } = res.data;
-    localStorage.setItem("aura_token", accessToken);
+    localStorage.setItem("HOQ_token", accessToken);
 
     const guestCart = [...cart];
 
@@ -394,7 +404,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       orders: []
     };
     setUser(mappedUser);
-    localStorage.setItem("aura_user", JSON.stringify(mappedUser));
+    localStorage.setItem("HOQ_user", JSON.stringify(mappedUser));
 
     // Merge guest cart items into user's DB cart
     if (guestCart.length > 0) {
@@ -455,15 +465,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       console.error("Failed to logout from API, clearing local session:", err);
     }
-    localStorage.removeItem("aura_token");
-    localStorage.removeItem("aura_user");
-    localStorage.removeItem("aura_cart");
+    localStorage.removeItem("HOQ_token");
+    localStorage.removeItem("HOQ_user");
+    localStorage.removeItem("HOQ_cart");
     setUser(null);
     setCart([]);
   }, []);
 
   const createOrder = useCallback(async (address: Address, paymentMethod: string, couponCode?: string): Promise<Order> => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("aura_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("HOQ_token") : null;
     if (token) {
       const checkoutRes = await api.orders.checkout({
         shippingAddress: {
@@ -487,7 +497,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const ord = checkoutRes.data;
       await loadDbUserDetail();
       setCart([]); // Clear state cart
-      
+
       return {
         id: ord.orderNumber || ord._id,
         date: ord.createdAt ? ord.createdAt.split("T")[0] : new Date().toISOString().split("T")[0],

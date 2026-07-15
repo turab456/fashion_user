@@ -21,7 +21,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AURA | Premium Luxury Women's Fashion",
+  title: "HOQ | Premium Luxury Women's Fashion",
   description: "Redefining Modern Femininity. Explore our collection of premium cashmere, organic linen tailoring, and minimalist accessories.",
 };
 

@@ -68,7 +68,7 @@ export default function Home() {
     if (newsletterEmail.trim()) {
       setNewsletterStatus("success");
       setNewsletterEmail("");
-      setTimeout(() => setNewsletterStatus(""), 5000);
+      setTimeout(() => setNewsletterStatus(""), 5001);
     }
   };
 
@@ -384,7 +384,7 @@ export default function Home() {
             {sec?.subtitle || "Social Moodboard"}
           </span>
           <h2 className="text-3xl md:text-4xl font-serif text-primary font-normal">
-            {sec?.title || "Inspired by #AuraStyle"}
+            {sec?.title || "Inspired by #HOQStyle"}
           </h2>
         </div>
 
@@ -415,7 +415,7 @@ export default function Home() {
           </div>
           <div className="md:col-span-7 space-y-6">
             <p className="text-sm tracking-wider leading-relaxed text-primary font-medium">
-              We stand against the noise of fleeting trends. AURA is founded on the conviction that clothing should be a carefully collected dialogue between form, fiber, and function.
+              We stand against the noise of fleeting trends. HOQ is founded on the conviction that clothing should be a carefully collected dialogue between form, fiber, and function.
             </p>
             <p className="text-xs tracking-wider leading-relaxed text-secondary font-light">
               Every design is meticulously sketched in our creative studio, cut from pure ecological linen, long-staple cashmere, and sandwashed silks, and put together by generational tailors in small-batch family factories. We believe true luxury lies in absolute quality and slow permanence.
@@ -433,7 +433,7 @@ export default function Home() {
       <section key="newsletter" className="py-24 text-center bg-brand-bg flex items-center justify-center">
         <div className="w-full max-w-xl px-6">
           <span className="text-[11px] uppercase tracking-[0.2em] text-secondary font-medium block mb-4">
-            {sec?.subtitle || "Aura Club"}
+            {sec?.subtitle || "HOQ Club"}
           </span>
           <h2 className="text-3xl md:text-4xl font-serif text-primary font-light mb-4">
             {sec?.title || "Subscribe for Collection Updates"}
@@ -461,7 +461,7 @@ export default function Home() {
           </form>
           {newsletterStatus === "success" && (
             <p className="text-[11px] text-success tracking-widest uppercase mt-4">
-              Thank you. You have been added to the AURA list.
+              Thank you. You have been added to the HOQ list.
             </p>
           )}
         </div>

@@ -90,7 +90,7 @@ function AccountContent() {
           {/* Header */}
           <div className="text-center mb-8 select-none">
             <span className="font-serif text-3xl tracking-[0.2em] uppercase text-primary">
-              AURA
+              HOQ
             </span>
             <p className="text-[10px] uppercase tracking-widest text-secondary mt-3">
               {isLoginView ? "Sign in to your account" : "Create a new account"}
@@ -162,7 +162,7 @@ function AccountContent() {
               onClick={() => setIsLoginView(!isLoginView)}
               className="text-xs uppercase tracking-widest font-semibold text-secondary hover:text-primary transition-colors focus:outline-none"
             >
-              {isLoginView ? "New to Aura? Create Account" : "Already have an account? Sign In"}
+              {isLoginView ? "New to HOQ? Create Account" : "Already have an account? Sign In"}
             </button>
           </div>
         </div>
@@ -217,9 +217,8 @@ function AccountContent() {
                   <button
                     key={item.id}
                     onClick={() => handleTabChange(item.id)}
-                    className={`w-full text-left px-6 py-4 text-xs uppercase tracking-widest font-semibold flex items-center justify-between transition-colors ${
-                      isActive ? "bg-brand-bg text-accent" : "hover:bg-brand-bg/50 text-secondary hover:text-primary"
-                    }`}
+                    className={`w-full text-left px-6 py-4 text-xs uppercase tracking-widest font-semibold flex items-center justify-between transition-colors ${isActive ? "bg-brand-bg text-accent" : "hover:bg-brand-bg/50 text-secondary hover:text-primary"
+                      }`}
                   >
                     <div className="flex items-center space-x-3.5">
                       <Icon strokeWidth={1.5} className="w-4 h-4" />
@@ -261,7 +260,7 @@ function AccountContent() {
                   </div>
                   <div>
                     <span className="text-[10px] uppercase tracking-widest text-secondary font-semibold block mb-1">
-                      Aura Membership Status
+                      HOQ Membership Status
                     </span>
                     <p className="text-xs uppercase tracking-widest font-semibold text-accent mt-0.5">
                       Elite Member
@@ -357,7 +356,7 @@ function AccountContent() {
                           {product.name}
                         </h3>
                         <p className="text-xs text-secondary mt-1">₹{product.price} INR</p>
-                        
+
                         <div className="grid grid-cols-2 gap-2 mt-4 select-none">
                           <button
                             onClick={() => addToCart(product, product.sizes[0], product.colors[0].name, 1)}

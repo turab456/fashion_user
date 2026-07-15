@@ -14,7 +14,7 @@ export default function Footer() {
     if (email.trim()) {
       setSubscribed(true);
       setEmail("");
-      setTimeout(() => setSubscribed(false), 5000);
+      setTimeout(() => setSubscribed(false), 5001);
     }
   };
 
@@ -48,7 +48,7 @@ export default function Footer() {
           {/* Brand & Story Column */}
           <div className="lg:col-span-2 space-y-6 pr-4">
             <span className="font-serif text-2xl tracking-[0.25em] uppercase text-primary">
-              AURA
+              HOQ
             </span>
             <p className="text-xs tracking-wider leading-relaxed text-secondary max-w-sm">
               We design timeless wardrobes for the modern woman. Embracing fluid tailoring, exquisite materials, and clean silhouettes to redefine femininity.
@@ -105,7 +105,7 @@ export default function Footer() {
           {/* Links Column 2 */}
           <div>
             <h3 className="text-xs uppercase tracking-widest text-primary font-semibold mb-6">
-              About Aura
+              About HOQ
             </h3>
             <ul className="space-y-4">
               {footerLinks.about.map((link) => (
@@ -164,7 +164,7 @@ export default function Footer() {
 
           {/* Copyright Notes */}
           <div className="text-[11px] tracking-wider text-secondary text-center md:text-right">
-            <span>© {new Date().getFullYear()} AURA CO. ALL RIGHTS RESERVED.</span>
+            <span>© {new Date().getFullYear()} HOQ CO. ALL RIGHTS RESERVED.</span>
           </div>
         </div>
       </div>

@@ -28,7 +28,7 @@ function ShopContent() {
           api.masters.list("collection"),
           api.masters.list("category"),
           api.masters.list("size"),
-          api.masters.list("color")
+          api.masters.list("color_family")
         ]);
         const items = prodRes.data || [];
         setDbProducts(items.map(mapBackendProductToFrontend));
@@ -82,16 +82,33 @@ function ShopContent() {
   // Available Filter Options (Resolved dynamically from backend masters)
   const categories = categoriesList.length > 0 ? categoriesList.map(c => c.name) : ["Coats", "Knitwear", "Dresses", "Trousers", "Shirts"];
   const sizes = sizesList.length > 0 ? sizesList.map(s => s.name) : ["XS", "S", "M", "L", "XL", "34", "36", "38", "40", "42"];
-  const colors = colorsList.length > 0 
-    ? colorsList.map(c => ({ name: c.name, hex: c.hex || "#000000" })) 
+  const colorFamilyHexMap: Record<string, string> = {
+    Black: "#111111",
+    White: "#FAFAF8",
+    Beige: "#D2B48C",
+    Grey: "#5E5E5E",
+    Orange: "#FFA500",
+    Red: "#FF0000",
+    Blue: "#0000FF",
+    Green: "#008000",
+    Yellow: "#FFFF00",
+    Pink: "#FFC0CB",
+    Purple: "#800080",
+    Brown: "#8B4513",
+    Navy: "#000080",
+    Olive: "#808000",
+    Maroon: "#800000"
+  };
+
+  const colors = colorsList.length > 0
+    ? colorsList.map(cf => ({ name: cf.name, hex: colorFamilyHexMap[cf.name] || "#CCCCCC" }))
     : [
-        { name: "Black", hex: "#111111" },
-        { name: "Grey", hex: "#5E5E5E" },
-        { name: "Cream/White", hex: "#FAFAF8" },
-        { name: "Camel", hex: "#C19A6B" },
-        { name: "Oatmeal", hex: "#D2B48C" },
-        { name: "Ochre", hex: "#8B6F47" }
-      ];
+      { name: "Black", hex: "#111111" },
+      { name: "Grey", hex: "#5E5E5E" },
+      { name: "White", hex: "#FAFAF8" },
+      { name: "Beige", hex: "#D2B48C" },
+      { name: "Orange", hex: "#FFA500" }
+    ];
   const derivedFabrics = Array.from(new Set(dbProducts.map(p => p.fabric).filter(Boolean)));
   const fabrics = derivedFabrics.length > 0 ? derivedFabrics : ["Wool-Cashmere", "Organic Linen", "100% Cashmere", "100% Silk"];
   const priceRanges = [
@@ -184,11 +201,7 @@ function ShopContent() {
       if (selectedColors.length > 0) {
         const hasColor = product.colors.some((colorOpt) =>
           selectedColors.some(
-            (c) =>
-              colorOpt.name.toLowerCase().includes(c.toLowerCase()) ||
-              (c === "Cream/White" &&
-                (colorOpt.name.toLowerCase().includes("white") ||
-                  colorOpt.name.toLowerCase().includes("oat")))
+            (c) => colorOpt.family && colorOpt.family.toLowerCase() === c.toLowerCase()
           )
         );
         if (!hasColor) return false;
@@ -245,9 +258,8 @@ function ShopContent() {
           <li>
             <button
               onClick={() => setSelectedCategory("")}
-              className={`text-xs uppercase tracking-wider transition-colors ${
-                selectedCategory === "" ? "text-accent font-semibold" : "text-secondary hover:text-primary"
-              }`}
+              className={`text-xs uppercase tracking-wider transition-colors ${selectedCategory === "" ? "text-accent font-semibold" : "text-secondary hover:text-primary"
+                }`}
             >
               All Categories
             </button>
@@ -256,11 +268,10 @@ function ShopContent() {
             <li key={cat}>
               <button
                 onClick={() => setSelectedCategory(cat)}
-                className={`text-xs uppercase tracking-wider transition-colors ${
-                  selectedCategory.toLowerCase() === cat.toLowerCase()
+                className={`text-xs uppercase tracking-wider transition-colors ${selectedCategory.toLowerCase() === cat.toLowerCase()
                     ? "text-accent font-semibold"
                     : "text-secondary hover:text-primary"
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -284,9 +295,8 @@ function ShopContent() {
                   params.delete("collection");
                   router.push(`/shop${params.toString() ? `?${params.toString()}` : ""}`);
                 }}
-                className={`text-xs uppercase tracking-wider transition-colors ${
-                  selectedCollection === "" ? "text-accent font-semibold" : "text-secondary hover:text-primary"
-                }`}
+                className={`text-xs uppercase tracking-wider transition-colors ${selectedCollection === "" ? "text-accent font-semibold" : "text-secondary hover:text-primary"
+                  }`}
               >
                 All Collections
               </button>
@@ -300,11 +310,10 @@ function ShopContent() {
                     params.set("collection", col._id);
                     router.push(`/shop?${params.toString()}`);
                   }}
-                  className={`text-xs uppercase tracking-wider transition-colors text-left ${
-                    selectedCollection === col._id
+                  className={`text-xs uppercase tracking-wider transition-colors text-left ${selectedCollection === col._id
                       ? "text-accent font-semibold"
                       : "text-secondary hover:text-primary"
-                  }`}
+                    }`}
                 >
                   {col.name}
                 </button>
@@ -326,11 +335,10 @@ function ShopContent() {
               <button
                 key={size}
                 onClick={() => toggleSize(size)}
-                className={`text-[10px] uppercase font-sans font-medium py-1.5 border text-center transition-all ${
-                  isSelected
+                className={`text-[10px] uppercase font-sans font-medium py-1.5 border text-center transition-all ${isSelected
                     ? "bg-primary text-white border-primary"
                     : "bg-transparent border-border-custom hover:border-primary text-secondary"
-                }`}
+                  }`}
               >
                 {size}
               </button>
@@ -352,17 +360,15 @@ function ShopContent() {
                 key={color.name}
                 onClick={() => toggleColor(color.name)}
                 title={color.name}
-                className={`w-6 h-6 border flex items-center justify-center transition-all relative ${
-                  isSelected ? "border-primary scale-105" : "border-border-custom hover:border-secondary"
-                }`}
+                className={`w-6 h-6 border flex items-center justify-center transition-all relative ${isSelected ? "border-primary scale-105" : "border-border-custom hover:border-secondary"
+                  }`}
                 style={{ backgroundColor: color.hex }}
               >
                 {isSelected && (
                   <Check
                     strokeWidth={2.5}
-                    className={`w-3.5 h-3.5 ${
-                      color.name === "Cream/White" ? "text-primary" : "text-white"
-                    }`}
+                    className={`w-3.5 h-3.5 ${color.name === "White" || color.name === "Beige" || color.name === "Yellow" ? "text-primary" : "text-white"
+                      }`}
                   />
                 )}
               </button>
@@ -383,9 +389,8 @@ function ShopContent() {
               <li key={fabric}>
                 <button
                   onClick={() => toggleFabric(fabric)}
-                  className={`text-xs uppercase tracking-wider transition-colors ${
-                    isSelected ? "text-accent font-semibold" : "text-secondary hover:text-primary"
-                  }`}
+                  className={`text-xs uppercase tracking-wider transition-colors ${isSelected ? "text-accent font-semibold" : "text-secondary hover:text-primary"
+                    }`}
                 >
                   {fabric}
                 </button>
@@ -407,9 +412,8 @@ function ShopContent() {
               <li key={range.value}>
                 <button
                   onClick={() => togglePriceRange(range.value)}
-                  className={`text-xs uppercase tracking-wider transition-colors ${
-                    isSelected ? "text-accent font-semibold" : "text-secondary hover:text-primary"
-                  }`}
+                  className={`text-xs uppercase tracking-wider transition-colors ${isSelected ? "text-accent font-semibold" : "text-secondary hover:text-primary"
+                    }`}
                 >
                   {range.label}
                 </button>
@@ -454,7 +458,7 @@ function ShopContent() {
         <div className="border-b border-border-custom pb-10 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <span className="text-[11px] uppercase tracking-widest text-secondary font-medium block mb-2">
-              Aura Catalog
+              HOQ Catalog
             </span>
             <h1 className="text-3xl md:text-5xl font-serif font-light text-primary uppercase tracking-wider">
               {selectedCategory || "The Collections"}
@@ -506,9 +510,8 @@ function ShopContent() {
               <button
                 key={item.label}
                 onClick={() => setSelectedCategory(item.filter)}
-                className={`text-[11px] font-sans tracking-widest font-semibold whitespace-nowrap uppercase py-1 border-b transition-all duration-300 ${
-                  isActive ? "border-primary text-primary" : "border-transparent text-secondary hover:text-primary"
-                }`}
+                className={`text-[11px] font-sans tracking-widest font-semibold whitespace-nowrap uppercase py-1 border-b transition-all duration-300 ${isActive ? "border-primary text-primary" : "border-transparent text-secondary hover:text-primary"
+                  }`}
               >
                 {item.label}
               </button>
@@ -550,9 +553,8 @@ function ShopContent() {
 
       {/* Mobile Filters Drawer */}
       <div
-        className={`fixed inset-0 z-50 transition-opacity duration-300 lg:hidden ${
-          isMobileFilterOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 transition-opacity duration-300 lg:hidden ${isMobileFilterOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       >
         {/* Backdrop */}
         <div
@@ -562,9 +564,8 @@ function ShopContent() {
 
         {/* Drawer content */}
         <div
-          className={`absolute top-0 right-0 w-80 max-w-[90%] h-full bg-brand-bg p-8 shadow-xl flex flex-col justify-between transition-transform duration-300 transform ${
-            isMobileFilterOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`absolute top-0 right-0 w-80 max-w-[90%] h-full bg-brand-bg p-8 shadow-xl flex flex-col justify-between transition-transform duration-300 transform ${isMobileFilterOpen ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           <div className="flex-1 overflow-y-auto pr-2">
             <div className="flex items-center justify-between pb-6 border-b border-border-custom mb-8">

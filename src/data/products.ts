@@ -10,6 +10,7 @@ export interface ColorOption {
   name: string;
   hex: string;
   images: string[];
+  family?: string;
 }
 
 export interface Product {

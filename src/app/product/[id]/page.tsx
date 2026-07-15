@@ -127,6 +127,11 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
     }
   }, [product, addToRecentlyViewed]);
 
+  // Reset active image if selected color changes
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedColor]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-brand-bg flex items-center justify-center pt-32 text-center text-xs tracking-widest uppercase">
@@ -157,6 +162,11 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
   const isWishlisted = wishlist.includes(product.id);
   const hasSale = product.salePrice !== null;
   const currentPrice = product.salePrice || product.price;
+
+  const selectedColorObj = product.colors.find(c => c.name === selectedColor) || product.colors[0];
+  const displayImages = selectedColorObj && selectedColorObj.images && selectedColorObj.images.length > 0
+    ? selectedColorObj.images
+    : product.images;
 
   // Recommendations: products from the same category
   const suggestedProducts = allProducts
@@ -226,13 +236,13 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
           <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-12 gap-4">
             {/* Thumbnail Strip (Desktop Left) */}
             <div className="hidden md:flex md:col-span-2 flex-col space-y-3.5 order-2 md:order-1 select-none">
-              {product.images.map((img, idx) => (
+              {displayImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={`aspect-[4/5] bg-cover bg-center border transition-all ${idx === activeImageIndex
-                      ? "border-primary opacity-100"
-                      : "border-transparent opacity-60 hover:opacity-100"
+                    ? "border-primary opacity-100"
+                    : "border-transparent opacity-60 hover:opacity-100"
                     }`}
                   style={{ backgroundImage: `url(${img})` }}
                   aria-label={`View image ${idx + 1}`}
@@ -250,7 +260,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
                 {/* Regular Image */}
                 <div
                   className="w-full h-full bg-cover bg-center transition-transform duration-300"
-                  style={{ backgroundImage: `url(${product.images[activeImageIndex]})` }}
+                  style={{ backgroundImage: `url(${displayImages[activeImageIndex] || displayImages[0]})` }}
                 />
 
                 {/* Zoom Box overlay */}
@@ -258,7 +268,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
                   className="absolute inset-0 bg-white pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-no-repeat"
                   style={{
                     ...zoomStyle,
-                    backgroundImage: `url(${product.images[activeImageIndex]})`,
+                    backgroundImage: `url(${displayImages[activeImageIndex] || displayImages[0]})`,
                     backgroundSize: "200%"
                   }}
                 />
@@ -266,7 +276,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
 
               {/* Mobile Thumbnail Strip */}
               <div className="flex md:hidden space-x-2 mt-4 select-none">
-                {product.images.map((img, idx) => (
+                {displayImages.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
@@ -364,8 +374,8 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={`text-xs uppercase font-sans font-medium min-w-[50px] py-3.5 border text-center transition-all ${isSelected
-                          ? "bg-primary text-white border-primary"
-                          : "bg-white border-border-custom hover:border-primary text-primary"
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white border-border-custom hover:border-primary text-primary"
                         }`}
                     >
                       {size}
@@ -701,7 +711,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
 
               <div className="flex-1 overflow-y-auto space-y-6">
                 <p className="text-xs tracking-wider text-secondary leading-relaxed font-light">
-                  AURA designs are cut for classic elegance, maintaining clean editorial fits. Follow our measurements table below to select your sizing.
+                  HOQ designs are cut for classic elegance, maintaining clean editorial fits. Follow our measurements table below to select your sizing.
                 </p>
 
                 {/* Table */}

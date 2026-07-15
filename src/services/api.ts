@@ -1,11 +1,11 @@
-const BASE_URL = "http://localhost:5000/api/v1";
+const BASE_URL = "http://localhost:5001/api/v1";
 
 const getHeaders = () => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("aura_token");
+    const token = localStorage.getItem("HOQ_token");
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -17,13 +17,13 @@ export async function request(path: string, options: RequestInit = {}) {
   const url = `${BASE_URL}${path}`;
   const headers = { ...getHeaders(), ...options.headers };
   const res = await fetch(url, { ...options, headers });
-  
+
   if (!res.ok) {
     let errMsg = `Request failed with status ${res.status}`;
     try {
       const errData = await res.json();
       errMsg = errData.message || errMsg;
-    } catch (_) {}
+    } catch (_) { }
     throw new Error(errMsg);
   }
 
@@ -64,10 +64,10 @@ export const api = {
     checkout: (body: any) => request("/orders/checkout", { method: "POST", body: JSON.stringify(body) }),
     myOrders: () => request("/orders/my-orders"),
     getById: (id: string) => request(`/orders/${id}`),
-    verifyRazorpay: (orderId: string, paymentId: string, signature: string) => 
-      request("/orders/verify-razorpay", { 
-        method: "POST", 
-        body: JSON.stringify({ orderId, paymentId, signature }) 
+    verifyRazorpay: (orderId: string, paymentId: string, signature: string) =>
+      request("/orders/verify-razorpay", {
+        method: "POST",
+        body: JSON.stringify({ orderId, paymentId, signature })
       }),
   },
   reviews: {

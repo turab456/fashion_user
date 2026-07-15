@@ -17,7 +17,7 @@ function Tracker() {
 
     const logTraffic = async () => {
       try {
-        await fetch("http://localhost:5000/api/v1/traffic/hit", {
+        await fetch("http://localhost:5001/api/v1/traffic/hit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
