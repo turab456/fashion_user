@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #111111;
+  --color-secondary: #5E5E5E;
+  --color-brand-bg: #FAFAF8;
+  --color-card: #FFFFFF;
+  --color-border-custom: #ECECEC;
+  --color-accent: #8B6F47;
+  --color-sale: #B22222;
+  --color-hover: #1F1F1F;
+  --color-success: #1B7F4A;
+  
+  --font-serif: var(--font-playfair), serif;
+  --font-sans: var(--font-inter), sans-serif;
+}
+
+:root {
+  --background: #FAFAF8;
+  --foreground: #111111;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom minimal scrollbar for luxury aesthetic */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAFAF8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ECECEC;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5E5E5E;
+}
+
+/* Fine-tune typography spacing */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif), serif;
+  letter-spacing: -0.01em;
+}
+
+/* Custom outline focus ring for accessibility */
+*:focus-visible {
+  outline: 1px solid #8B6F47;
+  outline-offset: 2px;
+}
